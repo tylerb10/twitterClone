@@ -10,14 +10,6 @@ closeBtn.onclick = function(){
     replyInput.value = ''
 }
 
-window.onclick = function(e) {
-    if (e.target == modal) {
-        modal.style.display = 'none'
-    }
-}
-
-
-
 
 document.addEventListener('click', function(e){
     if(e.target.dataset.like){
@@ -27,11 +19,16 @@ document.addEventListener('click', function(e){
         handleRetweetClick(e.target.dataset.retweet)
     }
     else if(e.target.dataset.reply){
-        modal.style.display = 'inline-block'
         handleReplyClick(e.target.dataset.reply)
     }
     else if(e.target.id === 'tweet-btn'){
         handleTweetBtnClick()
+    }
+    else if (e.target.dataset.comment){
+        modal.style.display = ('inline-block')
+    }
+    else if(e.target.id === 'reply-tweet-btn'){
+        handleCommentTweet()
     }
 })
  
@@ -88,6 +85,25 @@ function handleTweetBtnClick(){
     tweetInput.value = ''
     }
 
+}
+
+
+function handleCommentTweet(){
+    if(replyInput.value){
+        tweetsData.replies.unshift({
+            handle: `@Scrimba`,
+            profilePic: `images/scrimbalogo.png`,
+            likes: 0,
+            retweets: 0,
+            tweetText: tweetInput.value,
+            replies: [],
+            isLiked: false,
+            isRetweeted: false,
+            uuid: uuidv4()
+        })
+        render()
+        tweetInput.value = ''
+    }
 }
 
 function getFeedHtml(){
@@ -151,6 +167,10 @@ function getFeedHtml(){
                     data-retweet="${tweet.uuid}"
                     ></i>
                     ${tweet.retweets}
+                </span>
+                <span class="reply-btn">
+                    <i class="fa-solid fa-reply" data-comment="${tweet.uuid}"
+                    ></i>
                 </span>
             </div>   
         </div>            
