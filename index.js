@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 const modal = document.getElementById("myModal")
 const closeBtn = document.getElementsByClassName("close")[0]
 const replyInput = document.getElementById("reply-input")
+const replyTweetBtn = document.getElementById('reply-tweet-btn')
 
 closeBtn.onclick = function(){
     modal.style.display = 'none'
@@ -11,6 +12,7 @@ closeBtn.onclick = function(){
 }
 
 
+// Adding event listeners for clicks on the document
 document.addEventListener('click', function(e){
     if(e.target.dataset.like){
        handleLikeClick(e.target.dataset.like) 
@@ -26,12 +28,14 @@ document.addEventListener('click', function(e){
     }
     else if (e.target.dataset.comment){
         modal.style.display = ('inline-block')
+	    modal.dataset.reply = e.target.dataset.comment
     }
     else if(e.target.id === 'reply-tweet-btn'){
-        handleCommentTweet()
+        handleCommentTweet(e.target.parentElement.parentElement.dataset.reply)
     }
 })
  
+// Handle clicks on the "like" button and renders object
 function handleLikeClick(tweetId){ 
     const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
@@ -47,6 +51,7 @@ function handleLikeClick(tweetId){
     render()
 }
 
+// Handle clicks on the "retweet" button and renders object
 function handleRetweetClick(tweetId){
     const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
@@ -62,13 +67,15 @@ function handleRetweetClick(tweetId){
     render() 
 }
 
+// Handles clicks on the "comment" button, toggles the list of comments on or off
 function handleReplyClick(replyId){
     document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
 }
 
+
+// Handles the "Tweet" button clicks to render a new tweet at the top of the feed
 function handleTweetBtnClick(){
     const tweetInput = document.getElementById('tweet-input')
-
     if(tweetInput.value){
         tweetsData.unshift({
             handle: `@Scrimba`,
@@ -87,10 +94,13 @@ function handleTweetBtnClick(){
 
 }
 
-
+// Handles the reply to tweets function
 function handleCommentTweet(){
+    const targetTweetObj = tweetsData.filter(function(tweet){
+        return tweet.uuid === tweetId
+    })[0]
     if(replyInput.value){
-        tweetsData.replies.unshift({
+        targetTweetObj.replies.unshift({
             handle: `@Scrimba`,
             profilePic: `images/scrimbalogo.png`,
             likes: 0,
@@ -102,10 +112,13 @@ function handleCommentTweet(){
             uuid: uuidv4()
         })
         render()
-        tweetInput.value = ''
-    }
-}
+        modal.style.display = 'none'
+        replyInput.value = ''
+        }
+    }   
 
+
+// Renders the HTML feed
 function getFeedHtml(){
     let feedHtml = ``
     
